@@ -1,9 +1,27 @@
-var gulp        = require('gulp');
-var browserSync = require('browser-sync').create();
-var reload      = browserSync.reload;
-var sass        = require('gulp-sass');
+var gulp = require('gulp'),
+    browserSync = require('browser-sync').create(),
+    reload = browserSync.reload,
+    sass = require('gulp-sass'),
+    sass = require('gulp-sass'),
+    plumber = require('gulp-plumber'),
+    notify = require('gulp-notify'),
+    uglify = require('gulp-uglify'),
+    rigger = require('gulp-rigger'),
+    autoprefixer = require('gulp-autoprefixer'),
+    htmlbeautify = require('gulp-html-beautify'),
+    pug = require('gulp-pug');
 
-// Compile sass into CSS & auto-inject into browsers
+
+gulp.task('pug', function() {
+    return gulp.src('./src/template/*.pug')
+        .pipe(plumber({
+            errorHandler: notify.onError()
+        }))
+        .pipe(pug({pretty:true}))
+        .pipe(htmlbeautify())
+        .pipe(gulp.dest('./src/'))
+});
+
 gulp.task('sass', function() {
     return gulp.src(['node_modules/bootstrap/scss/bootstrap.scss', 'src/scss/*.scss'])
         .pipe(sass())
@@ -11,14 +29,12 @@ gulp.task('sass', function() {
         .pipe(browserSync.stream());
 });
 
-// Move the javascript files into our /src/js folder
 gulp.task('js', function() {
     return gulp.src(['node_modules/bootstrap/dist/js/bootstrap.min.js', 'node_modules/jquery/dist/jquery.min.js', 'node_modules/popper.js/dist/umd/popper.min.js'])
         .pipe(gulp.dest("src/js"))
         .pipe(browserSync.stream());
 });
 
-// Static Server + watching scss/html files
 gulp.task('serve', function() {
 
     browserSync.init({
